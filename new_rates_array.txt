@@ -1,0 +1,1 @@
+a:24:{i:0;s:3:"AUD";i:1;s:3:"BRL";i:2;s:3:"CAD";i:3;s:3:"CHF";i:4;s:3:"CNY";i:5;s:3:"DKK";i:6;s:3:"EUR";i:7;s:3:"GBP";i:8;s:3:"HKD";i:9;s:3:"HUF";i:10;s:3:"INR";i:11;s:3:"JPY";i:12;s:3:"MXN";i:13;s:3:"MYR";i:14;s:3:"NOK";i:15;s:3:"NZD";i:16;s:3:"PHP";i:17;s:3:"RUB";i:18;s:3:"SEK";i:19;s:3:"SGD";i:20;s:3:"THB";i:21;s:3:"TRY";i:22;s:3:"USD";i:23;s:3:"ZAR";}

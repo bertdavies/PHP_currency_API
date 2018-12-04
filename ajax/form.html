@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Currency API</title>
+</head>
+
+
+<style>
+    #form-message{
+        background-color: aquamarine;
+        border: 1px solid blue;
+        color: black;
+        display: none;
+        font-size: 12px;
+        margin-bottom: 10px;
+        padding: 10px 10px;
+        max-width: 255;
+    }
+
+        #loader {   
+    visibility: hidden;
+    border: 16px solid #f3f3f3;   /*Loading animation from https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_loader*/ 
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 60px;
+    height: 60px;
+    -webkit-animation: spin 2s linear infinite; /* Safari */
+    animation: spin 2s linear infinite;
+    }
+    /* Safari */
+    @-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+    }
+
+    @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+    }
+
+
+
+</style>
+
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <a class="navbar-brand" href="#">Currency Conversion API browser interface</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="../rates.xml">rates file</a>
+            </li>
+          </ul>
+        </div>  
+      </nav>
+<div class="container">
+<h1>HTTP request testing application</h1><br>
+POST <input type="radio" class="form-check-label" onclick="javascript:requestType();" name="yesno" id="post"> 
+PUT <input type="radio" class="form-check-label" onclick="javascript:requestType();" name="yesno" id="put">
+DELETE  <input type="radio" class="form-check-label" onclick="javascript:requestType();" name="yesno" id="delete"><br>
+
+<div id="loader"></div>
+
+    <div class="form-group">
+    <label for="ccode">Currency Code</label>
+    <input type="text" id="ccode" spellcheck="false" class="form-control">
+    </div>
+
+    <div class="form-group">
+    <label for="cname">Currency Name</label>
+    <input type="text" id="cname" spellcheck="false" class="form-control">
+    </div>
+
+    <div class="form-group">
+    <label for="crate">Rate (£=1)</label>
+    <input type="text" id="crate" spellcheck="false" class="form-control">
+    </div>
+
+    <div class="form-group">
+    <label for="ccountries">Countries (comma seperated if +1)</label>
+    <textarea id="ccountries" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" id="btn-submit" class="btn btn-info">Send Request</button>
+<!---->
+
+    <textarea class="form-control" rows="10" cols="32" id="form-messages"></textarea>
+
+<script>
+document.getElementById('btn-submit').style.visibility = 'hidden';
+
+function requestType() {
+    if (document.getElementById('post').checked) {
+        document.getElementById('ccode').style.visibility = 'visible';
+        document.getElementById('crate').style.visibility = 'visible';
+        document.getElementById('cname').style.visibility = 'hidden';
+        document.getElementById('ccountries').style.visibility = 'hidden';
+        document.getElementById('btn-submit').style.visibility = 'visible';
+    }
+    else if (document.getElementById('put').checked){
+        document.getElementById('ccode').style.visibility = 'visible';
+        document.getElementById('crate').style.visibility = 'visible';
+        document.getElementById('cname').style.visibility = 'visible';
+        document.getElementById('ccountries').style.visibility = 'visible';
+        document.getElementById('btn-submit').style.visibility = 'visible';
+    }
+    else if (document.getElementById('delete').checked){
+        document.getElementById('ccode').style.visibility = 'visible';
+        document.getElementById('crate').style.visibility = 'hidden';
+        document.getElementById('cname').style.visibility = 'hidden';
+        document.getElementById('ccountries').style.visibility = 'hidden';
+        document.getElementById('btn-submit').style.visibility = 'visible';
+    }
+    else{
+        document.getElementById('ccode').style.visibility = 'hidden';
+        document.getElementById('crate').style.visibility = 'hidden';
+        document.getElementById('cname').style.visibility = 'hidden';
+        document.getElementById('ccountries').style.visibility = 'hidden';
+        document.getElementById('btn-submit').style.visibility = 'visible';
+    }
+
+}
+
+        document.getElementById('btn-submit').addEventListener('click', sendReq);
+      
+        
+
+        function sendReq()
+        {
+            document.getElementById('loader').style.visibility = 'visible';
+            var ccode = document.getElementById('ccode').value;
+            var cname = document.getElementById('cname').value;
+            var crate = document.getElementById('crate').value;
+            var ccountries = document.getElementById('ccountries').value;
+            var messages = document.getElementById('form-messages');
+            
+
+            //POST
+            if (document.getElementById('post').checked)
+            {
+            var params = 'code='+ccode+'&rate='+crate;
+            var http = new XMLHttpRequest();
+            var url = 'http://isa.cems.uwe.ac.uk/~a74-davies/atwd1/assignment/';
+
+
+            document.getElementById('btn-submit').style.visibility = 'hidden';
+            http.open('POST', url, true);
+
+            //Send the proper header information along with the request
+            http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+                http.onreadystatechange = function() {//Call a function when the state changes.
+                    if(http.readyState == 4 && http.status == 200) 
+                    {   
+                        console.log(params);
+                        document.getElementById('form-messages').innerHTML = this.responseText;
+                        document.getElementById('loader').style.visibility = 'hidden';
+                    }
+                }
+                http.send(params);
+            }
+
+            //PUT
+            else if(document.getElementById('put').checked)
+            {
+                var params = 'code='+ccode+'&rate='+crate+'&curr_name='+cname+'&country='+ccountries;
+                var http = new XMLHttpRequest();
+                var url = 'http://isa.cems.uwe.ac.uk/~a74-davies/atwd1/assignment/';
+
+                document.getElementById('btn-submit').style.visibility = 'hidden';
+                http.open('PUT', url, true);
+
+                //Send the proper header information along with the request
+                http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+                http.onreadystatechange = function() {//Call a function when the state changes.
+                    if(http.readyState == 4 && http.status == 200) {
+                        console.log(params);
+                        document.getElementById('form-messages').innerHTML = this.responseText;
+                        document.getElementById('loader').style.visibility = 'hidden';
+                    }
+                }
+                http.send(params);
+            }
+
+            //DELETE
+            else if(document.getElementById('delete').checked)
+            {
+                var params = 'code='+ccode;
+                var http = new XMLHttpRequest();
+                var url = 'http://isa.cems.uwe.ac.uk/~a74-davies/atwd1/assignment/';
+
+                document.getElementById('btn-submit').style.visibility = 'hidden';                
+                http.open('DELETE', url, true);
+
+                //Send the proper header information along with the request
+                http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+                http.onreadystatechange = function() {//Call a function when the state changes.
+                    if(http.readyState == 4 && http.status == 200) {
+                        console.log(params);
+                        document.getElementById('form-messages').innerHTML = this.responseText;
+                        document.getElementById('loader').style.visibility = 'hidden';
+                    }
+                }
+                http.send(params);
+    }
+}
+     
+</script>
+
+</body>
+</html>
